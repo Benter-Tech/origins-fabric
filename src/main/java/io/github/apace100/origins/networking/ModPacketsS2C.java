@@ -27,6 +27,7 @@ public class ModPacketsS2C {
 
     @Environment(EnvType.CLIENT)
     public static void register() {
+        ClientSidePacketRegistry.INSTANCE.register(ModPackets.HANDSHAKE,((packetContext, packetByteBuf) -> {}));
         ClientSidePacketRegistry.INSTANCE.register(ModPackets.OPEN_ORIGIN_SCREEN, (packetContext, packetByteBuf) -> {
             boolean showDirtBackground = packetByteBuf.readBoolean();
             packetContext.getTaskQueue().execute(() -> {

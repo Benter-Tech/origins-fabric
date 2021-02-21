@@ -1,5 +1,6 @@
 package io.github.apace100.origins.mixin;
 
+import io.github.apace100.origins.Origins;
 import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import io.github.apace100.origins.access.EndRespawningEntity;
 import io.github.apace100.origins.component.OriginComponent;
@@ -20,6 +21,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -48,6 +50,10 @@ public abstract class LoginMixin {
 
 	@Inject(at = @At("TAIL"), method = "Lnet/minecraft/server/PlayerManager;onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V")
 	private void openOriginsGui(ClientConnection connection, ServerPlayerEntity player, CallbackInfo info) {
+		if (!ServerSidePacketRegistry.INSTANCE.canPlayerReceive(player, ModPackets.HANDSHAKE)) {
+			connection.disconnect(new LiteralText(String
+					.format("Player disconnected because %s is not installed on the client", Origins.MODID)));
+		}
 		OriginComponent component = ModComponents.ORIGIN.get(player);
 
 		PacketByteBuf powerListData = new PacketByteBuf(Unpooled.buffer());
